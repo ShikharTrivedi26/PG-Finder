@@ -1,0 +1,54 @@
+{% extends '../pg/RenterBase.html' %}
+
+{% block content %}
+<h1>Chat with {{ recipient.username }}</h1>
+  <div id="chat-log">
+    {% for message in messages %}
+      <div class="message{% if message.sender == request.user %} sent{% else %} received{% endif %}">
+        <p>{{ message.content }}</p>
+        <span class="timestamp">{{ message.created_at|date:"H:i" }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  <form  method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    
+    <input type="submit" value="Submit">
+  </form>
+  
+
+
+<script>
+  var chatLog = $('#chat-log');
+  var messageInput = $('#chat-message-input');
+
+  var chatSocket = new WebSocket(
+      'ws://' + window.location.host +
+      '/ws/chat/' + '{{ recipient.id }}' + '/');
+
+  chatSocket.onmessage = function(event) {
+      var data = JSON.parse(event.data);
+      var message = data['message'];
+      var sender = data['sender'];
+      var isRecipient = sender === '{{ recipient.username }}';
+      var cssClass = isRecipient ? 'recipient' : 'me';
+
+      if (isRecipient) {
+          chatLog.append('<div class="' + cssClass + '">' + sender + ': ' + message + '</div>');
+      }
+  };
+
+  $('#chat-form').on('submit', function(event) {
+      event.preventDefault();
+
+      var message = messageInput.val();
+      chatSocket.send(JSON.stringify({
+          'message': message
+      }));
+      messageInput.val('');
+      chatLog.append('<div class="me">' + '{{ request.user.username }}' + ': ' + message + '</div>');
+  });
+</script>
+
+{% endblock %}

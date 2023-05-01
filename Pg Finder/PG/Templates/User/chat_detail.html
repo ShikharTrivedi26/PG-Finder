@@ -1,0 +1,17 @@
+{% extends '../pg/PGBase.html' %}
+<h1>Chat with {{ recipient }}</h1>
+  <ul>
+    {% for message in messages %}
+      {% if message.sender == request.user %}
+        <li class="sent">{{ message.message }}</li>
+      {% else %}
+        <li class="received">{{ message.message }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Send">
+  </form>
+{% endblock %}

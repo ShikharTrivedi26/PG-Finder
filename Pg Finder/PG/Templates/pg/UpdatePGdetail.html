@@ -1,0 +1,21 @@
+{% extends './PGBase.html' %}
+    {% load static %}
+    {% block content %}
+    <div class="text-center">
+      <div class="container-fluid py-4">
+        <div class="row">
+          <div class="col-12">
+            <div class="card my-4">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                  <h6 class="text-white text-capitalize ps-3">Update PG Details</h6>
+                </div>
+                <br>
+
+        
+        <form method ="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Submit" />
+        </form>
+    {% endblock content %}     
